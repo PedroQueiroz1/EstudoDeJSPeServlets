@@ -19,7 +19,7 @@
 
  
 ## Ferramentas utilizadas
-[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
 
 ## Acesso ao projeto
 
