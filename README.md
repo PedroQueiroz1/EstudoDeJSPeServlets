@@ -20,6 +20,7 @@
  
 ## Ferramentas utilizadas
 [![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
+Além das ferramentas acima, nesse projeto está incluso: Ajax.
 
 ## Acesso ao projeto
 
