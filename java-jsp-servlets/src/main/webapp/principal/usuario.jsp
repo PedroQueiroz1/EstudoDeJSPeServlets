@@ -38,34 +38,37 @@
 
 														<form class="form-material"
 															action="<%=request.getContextPath()%>/ServletUsuarioController"
-															method="post">
-															<div class="form-group form-default">
+															method="post" id="form-usuario">
+															
+															<input type="hidden" name="acao" id="acao" value="">
+															
+															<div class="form-group form-default form-static-label">
 																<input type="text" name="id" id="id"
 																	class="form-control" readonly="readonly"
 																	value="${modelLogin.id}"> <span
 																	class="form-bar"></span> <label class="float-label">ID:</label>
 															</div>
-															<div class="form-group form-default">
+															<div class="form-group form-default form-static-label">
 																<input type="text" name="nome" id="nome"
 																	class="form-control" required="required"
 																	value="${modelLogin.nome}"> <span
 																	class="form-bar"></span> <label class="float-label">Nome:</label>
 															</div>
-															<div class="form-group form-default">
+															<div class="form-group form-default form-static-label">
 																<input type="email" name="email" id="email"
 																	class="form-control" required="required"
 																	autocomplete="off" value="${modelLogin.email}">
 																<span class="form-bar"></span> <label
 																	class="float-label">E-mail:</label>
 															</div>
-															<div class="form-group form-default">
+															<div class="form-group form-default form-static-label">
 																<input type="text" name="login" id="login"
 																	class="form-control" required="required"
 																	autocomplete="off" value="${modelLogin.login}">
 																<span class="form-bar"></span> <label
 																	class="float-label">Login:</label>
 															</div>
-															<div class="form-group form-default">
+															<div class="form-group form-default form-static-label">
 																<input type="password" name="senha" id="senha"
 																	class="form-control" required="required"
 																	autocomplete="off" value="${modelLogin.senha}">
@@ -73,9 +76,9 @@
 																	class="float-label">Senha:</label>
 															</div>
 
-															<button class="btn btn-primary waves-effect waves-light">Novo</button>
-															<button class="btn btn-success waves-effect waves-light">Salvar</button>
-															<button class="btn btn-info waves-effect waves-light">Excluir</button>
+															<button type="button" class="btn btn-primary waves-effect waves-light" onclick="limparForm()">Limpar Formulário</button>
+															<button type="submit" class="btn btn-success waves-effect waves-light">Salvar</button>
+															<button type="button" class="btn btn-info waves-effect waves-light" onclick="criarDelete()">Excluir</button>
 														</form>
 													</div>
 												</div>
@@ -95,5 +98,26 @@
 	</div>
 	<jsp:include page="javascriptfile.jsp"></jsp:include>
 </body>
+
+<script>
+
+function criarDelete(){
+	document.getElementById("form-usuario").method = 'get';
+	document.getElementById("acao").value = 'deletar';
+	document.getElementById("form-usuario").submit(); 
+}
+
+function limparForm(){
+	
+	// document.getElementById("form-usuario").reset();
+	
+	var elementos = document.getElementById("form-usuario").elements;
+	
+	for(p = 0; p < elementos.length; p ++){
+		elementos[p].value = '';
+	}
+}
+
+</script>
 
 </html>
