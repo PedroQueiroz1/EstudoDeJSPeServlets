@@ -15,8 +15,7 @@
 ## Descrição do projeto 
 
 <p align="justify">
-  Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Java.
-
+  Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Java. Também tem Ajax, Jquery e JSTL no projeto.
  
 ## Ferramentas utilizadas
 [![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
