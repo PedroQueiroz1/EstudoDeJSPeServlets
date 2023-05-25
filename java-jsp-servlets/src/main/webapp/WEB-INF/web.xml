@@ -23,4 +23,14 @@
     <servlet-name>ServletUsuarioController</servlet-name>
     <url-pattern>/ServletUsuarioController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ServletGenericUtil</display-name>
+    <servlet-name>ServletGenericUtil</servlet-name>
+    <servlet-class>servlets.ServletGenericUtil</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServletGenericUtil</servlet-name>
+    <url-pattern>/ServletGenericUtil</url-pattern>
+  </servlet-mapping>
 </web-app>
