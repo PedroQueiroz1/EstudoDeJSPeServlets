@@ -82,7 +82,7 @@
 																	<c:if
 																		test="${modelLogin.fotosUsuario == '' || modelLogin.fotosUsuario == null}">
 																		<img alt="Imagem Usuario" id="fotoembase64"
-																			src="assets/images/avatar-1.jpg" width="70px">
+																			src="assets/images/avatar-blank.jpg" width="70px">
 																	</c:if>
 																</div>
 																<input type="file" id="fileFoto" name="fileFoto"
@@ -143,11 +143,10 @@ if (mL != null && mL.getPerfil().equals("AUXILIAR")) {
 																	class="float-label">Perfil</label>
 															</div>
 															<div class="form-group form-default form-static-label">
-																<input onblur="pesquisaCep();" type="text" name="cep" id="cep"
-																	class="form-control" required="required"
-																	autocomplete="off" value="${modelLogin.cep}">
-																<span class="form-bar"></span> <label
-																	class="float-label">Cep</label>
+																<input onblur="pesquisaCep();" type="text" name="cep"
+																	id="cep" class="form-control" required="required"
+																	autocomplete="off" value="${modelLogin.cep}"> <span
+																	class="form-bar"></span> <label class="float-label">Cep</label>
 															</div>
 															<div class="form-group form-default form-static-label">
 																<input type="text" name="logradouro" id="logradouro"
@@ -173,9 +172,8 @@ if (mL != null && mL.getPerfil().equals("AUXILIAR")) {
 															<div class="form-group form-default form-static-label">
 																<input type="text" name="uf" id="uf"
 																	class="form-control" required="required"
-																	autocomplete="off" value="${modelLogin.uf}">
-																<span class="form-bar"></span> <label
-																	class="float-label">UF</label>
+																	autocomplete="off" value="${modelLogin.uf}"> <span
+																	class="form-bar"></span> <label class="float-label">UF</label>
 															</div>
 															<div class="form-group form-default form-static-label">
 																<input type="text" name="numero" id="numero"
@@ -262,6 +260,21 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 												</tbody>
 											</table>
 										</div>
+
+										<nav aria-label="Page navigation example">
+											<ul class="pagination">
+												<%
+												int totalPagina = (int) request.getAttribute("totalPagina");
+
+												for (int p = 0; p < totalPagina; p++) {
+													String url = request.getContextPath() + "/ServletUsuarioController?acao=paginar&pagina=" + (p * 5);
+													out.print("<li class=\"page-item\"><a class=\"page-link\" href=\"" + url + "\">" + (p + 1) + "</a></li>");
+												}
+												%>
+
+											</ul>
+										</nav>
+
 									</div>
 									<!-- Page-body end -->
 								</div>
@@ -296,7 +309,7 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 						aria-label="nome" id="nomeBusca" aria-describedby="basic-addon2">
 					<div class="input-group-append">
 						<button class="btn btn-success" type="button"
-							onclick="buscarUsuario()">Buscar</button>
+							onclick="buscarUsuario();">Buscar</button>
 					</div>
 				</div>
 				<div style="height: 300px; overflow: scroll;">
@@ -312,7 +325,13 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 						</tbody>
 					</table>
 				</div>
-				<span id="totalResultados"></span>
+				<nav aria-label="Page navigation example">
+					<ul class="pagination" id="ulPaginacaoUsuarioAjax">
+					</ul>
+				</nav>
+				
+<span id="totalResultados"></span>
+
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -323,18 +342,20 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 
 
 
-<script>
-	function pesquisaCep(){
+<script type="text/javascript">
+
+	function pesquisaCep() {
 		var cep = $("#cep").val();
-		
-		$.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function(dados){
-			if(!("erro" in dados)){
-				$("#logradouro").val(dados.logradouro);
-				$("#bairro").val(dados.bairro);
-				$("#localidade").val(dados.localidade);
-				$("#uf").val(dados.uf);
-			}
-		});
+
+		$.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?",
+				function(dados) {
+					if (!("erro" in dados)) {
+						$("#logradouro").val(dados.logradouro);
+						$("#bairro").val(dados.bairro);
+						$("#localidade").val(dados.localidade);
+						$("#uf").val(dados.uf);
+					}
+				});
 	}
 
 	function visualizarImg(fotoembase64, fileFoto) {
@@ -352,7 +373,6 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 		} else {
 			preview.src = '';
 		}
-
 	}
 
 	function verEditar(id) {
@@ -362,50 +382,90 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 		window.location.href = urlAction + '?acao=buscarEditar&id=' + id;
 	}
 
-	function buscarUsuario() {
+	
+	function buscarUsuarioPagAjax(url) {
+		
+		var urlAction = document.getElementById('form-usuario').action;
 		var nomeBusca = document.getElementById('nomeBusca').value;
-
-		if (nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != '') { //Validando que tem que ter valor pra buscar no BD
-
-			var urlAction = document.getElementById('form-usuario').action;
-
-			$
-					.ajax(
-							{
-
-								method : "get",
-								url : urlAction,
-								data : "nomeBusca=" + nomeBusca
-										+ "&acao=buscarUsuarioAjax",
-								success : function(response) {
-
-									var json = JSON.parse(response);
-
-									$('#tabelaResultados > tbody > tr')
-											.remove();
-
-									for (var p = 0; p < json.length; p++) {
-										$('#tabelaResultados > tbody')
-												.append(
-														'<tr><td>'
-																+ json[p].id
-																+ '</td><td>'
-																+ json[p].nome
-																+ '</td><td><button onclick="verEditar('
-																+ json[p].id
-																+ ')" type="button" class="btn btn-info">Ver</button></td></tr>')
-									}
-
-									document.getElementById('totalResultados').textContent = 'Resultados: '
-											+ json.length;
-								}
-
-							}).fail(
-							function(xhr, status, errorThrown) {
-								alert('Erro ao buscar usuario por nome: '
-										+ xhr.responseText);
-							});
-		}
+		
+		 $.ajax({	     
+		     method: "get",
+		     url : urlAction,
+		     data : url,
+		     success: function (response, textStatus, xhr) {
+			 
+			 var json = JSON.parse(response);
+			 
+			 
+			 $('#tabelaResultados > tbody > tr').remove();
+			 $("#ulPaginacaoUsuarioAjax > li").remove();
+			 
+			  for(var p = 0; p < json.length; p++){
+			      $('#tabelaResultados > tbody').append('<tr> <td>'+json[p].id+'</td> <td> '+json[p].nome+'</td> <td><button onclick="verEditar('+json[p].id+')" type="button" class="btn btn-info">Ver</button></td></tr>');
+			  }
+			  
+			  document.getElementById('totalResultados').textContent = 'Resultados: ' + json.length;
+			  
+			    var totalPagina = xhr.getResponseHeader("totalPagina");
+		
+				  for (var p = 0; p < totalPagina; p++){
+				      
+				      var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUsuarioAjaxPagina&pagina='+ (p * 5);
+				      
+				      $("#ulPaginacaoUsuarioAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscarUsuarioPagAjax(\''+url+'\')">'+ (p + 1) +'</a></li>'); 
+				  }
+		     }
+		     
+		 }).fail(function(xhr, status, errorThrown){
+		    alert('Erro ao buscar usuário por nome: ' + xhr.responseText);
+		 });
+	}
+	
+	
+	function buscarUsuario() {
+		  
+	    var nomeBusca = document.getElementById('nomeBusca').value;
+	    
+	    if (nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != ''){  /*Validando que tem que ter valor pra buscar no banco*/
+		
+		 var urlAction = document.getElementById('form-usuario').action;
+		
+		 $.ajax({
+		     
+		     method: "get",
+		     url : urlAction,
+		     data : "nomeBusca=" + nomeBusca + '&acao=buscarUsuarioAjax',
+		     success: function (response, textStatus, xhr) {
+			 
+			 var json = JSON.parse(response);
+			 
+			 
+			 $('#tabelaResultados > tbody > tr').remove();
+			 $("#ulPaginacaoUsuarioAjax > li").remove();
+			 
+			  for(var p = 0; p < json.length; p++){
+			      $('#tabelaResultados > tbody').append('<tr> <td>'+json[p].id+'</td> <td> '+json[p].nome+'</td> <td><button onclick="verEditar('+json[p].id+')" type="button" class="btn btn-info">Ver</button></td></tr>');
+			  }
+			  
+			  document.getElementById('totalResultados').textContent = 'Resultados: ' + json.length;
+			  
+			    var totalPagina = xhr.getResponseHeader("totalPagina");
+		
+			  
+			    
+				  for (var p = 0; p < totalPagina; p++){
+				      
+				      var url = 'nomeBusca=' + nomeBusca + '&acao=buscarUsuarioAjaxPagina&pagina='+ (p * 5);
+				      
+				      $("#ulPaginacaoUsuarioAjax").append('<li class="page-item"><a class="page-link" href="#" onclick="buscarUsuarioPagAjax(\''+url+'\')">'+ (p + 1) +'</a></li>');
+				      
+				  }
+		     }
+		 
+		 }).fail(function(xhr, status, errorThrown){
+		    alert('Erro ao buscar usuário por nome: ' + xhr.responseText);
+		 });
+	    }
 	}
 
 	function criarDeleteComAjax() {
