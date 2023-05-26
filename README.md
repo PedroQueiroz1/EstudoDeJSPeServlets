@@ -15,8 +15,9 @@
 ## Descrição do projeto 
 
 <p align="justify">
-  Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Java. Também tem Ajax, Jquery, JSTL, EL e ViaCEP API no projeto.
-  É possível de realizar busca paginada...
+   Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Javam. Também tem Ajax, Jquery, JSTL, EL e ViaCEP API no projeto.
+   Utiliza Tomcat V10.0
+   É possível de realizar busca paginada...
  
 ## Ferramentas utilizadas
 [![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
