@@ -20,6 +20,13 @@ CREATE TABLE public.model_login
   sexo character varying(200),
   fotousuario text,
   extensaofotousuario character varying(10),
+  cep character varying(250),
+  logradouro character varying(250),
+  bairro character varying(250),
+  cidade character varying(250),
+  uf character varying(250),
+  numero character varying(250),
+  localidade character varying(200),
   CONSTRAINT model_login_pkey PRIMARY KEY (id),
   CONSTRAINT usuario_fk FOREIGN KEY (usuario_id)
       REFERENCES public.model_login (id) MATCH SIMPLE
@@ -30,4 +37,24 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.model_login
+  OWNER TO postgres;
+  
+CREATE TABLE public.telefone
+(
+  id integer NOT NULL DEFAULT nextval('telefone_seq'::regclass),
+  numero character varying(50) NOT NULL,
+  usuario_pai_id bigint NOT NULL,
+  usuario_cad_id bigint NOT NULL,
+  CONSTRAINT telefone_pkey PRIMARY KEY (id),
+  CONSTRAINT usuario_cad_fk FOREIGN KEY (usuario_cad_id)
+      REFERENCES public.model_login (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT usuario_pai_fk FOREIGN KEY (usuario_pai_id)
+      REFERENCES public.model_login (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.telefone
   OWNER TO postgres;

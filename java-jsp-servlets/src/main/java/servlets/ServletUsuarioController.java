@@ -37,6 +37,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 			String acao = request.getParameter("acao");
 
+				/*
+				 * DELETAR
+				 */
 			if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletar")) {
 
 				String idUser = request.getParameter("id");
@@ -50,6 +53,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 
+				/*
+				 * DELETAR AJAX
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletarAjax")) {
 				String idUser = request.getParameter("id");
 
@@ -57,6 +63,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				response.getWriter().write("Excluído com sucesso!");
 				
+				/*
+				 * BUSCAR USUARIO AJAX
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUsuarioAjax")) {
 
 				String nomeBusca = request.getParameter("nomeBusca");
@@ -70,7 +79,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				response.addHeader("totalPagina", ""+ daoUsuarioRep.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
-
+				
+				/*
+				 * BUSCAR USUARIO AJAX PÁGINA
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUsuarioAjaxPagina")) {
 
 				String nomeBusca = request.getParameter("nomeBusca");
@@ -84,7 +96,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				response.addHeader("totalPagina", ""+ daoUsuarioRep.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
-
+				 
+				/*
+				 * BUSCAR EDITAR
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarEditar")) {
 
 				String id = request.getParameter("id");
@@ -98,7 +113,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("modelLogin", mL);
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-
+				
+				/*
+				 * LISTAR USUARIO
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("listarUsuario")) {
 
 				List<ModelLogin> mLs = daoUsuarioRep.consultarListaUsuario(super.usuarioLogado(request));
@@ -107,7 +125,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("modelLogins", mLs);
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-
+				
+				/*
+				 * DOWNLOAD FOTO 
+				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("downloadFoto")) {
 				
 				String idUser = request.getParameter("id");
@@ -120,6 +141,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					response.getOutputStream().write(new Base64().decodeBase64(mL.getFotosUsuario().split("\\,")[1]));
 				}
 				
+				/*
+				 * PAGINAR
+				 */
 			}  else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
 				
 				Integer offset = Integer.parseInt(request.getParameter("pagina"));

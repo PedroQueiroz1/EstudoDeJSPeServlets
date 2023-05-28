@@ -389,6 +389,39 @@ public class DAOUsuarioRepository {
 
 		return mL;
 	}
+	
+	public ModelLogin consultarUsuarioID(Long id) throws Exception {
+		
+		ModelLogin mL = new ModelLogin();
+		
+		String sql = "SELECT * FROM model_login WHERE id = ? and useradmin is false";
+		
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setLong(1, id);
+		
+		ResultSet rs = pstm.executeQuery();
+		
+		while (rs.next()) {
+			
+			mL.setId(rs.getLong("id"));
+			mL.setEmail(rs.getString("email"));
+			mL.setLogin(rs.getString("login"));
+			mL.setSenha(rs.getString("senha"));
+			mL.setNome(rs.getString("nome"));
+			mL.setPerfil(rs.getString("perfil"));
+			mL.setSexo(rs.getString("sexo"));
+			mL.setFotosUsuario(rs.getString("fotousuario"));
+			mL.setExtensaoFotoUsuario(rs.getString("extensaofotousuario"));
+			mL.setCep(rs.getString("cep"));
+			mL.setLogradouro(rs.getString("logradouro"));
+			mL.setBairro(rs.getString("bairro"));
+			mL.setLocalidade(rs.getString("localidade"));
+			mL.setUf(rs.getString("uf"));
+			mL.setNumero(rs.getString("numero"));
+		}
+		
+		return mL;
+	}
 
 	public boolean validarLogin(String login) throws Exception {
 		String sql = "SELECT COUNT(1) > 0 AS existe FROM model_login WHERE UPPER(login) = UPPER(?)";
