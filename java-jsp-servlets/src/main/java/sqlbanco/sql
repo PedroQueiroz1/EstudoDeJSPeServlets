@@ -27,6 +27,7 @@ CREATE TABLE public.model_login
   uf character varying(250),
   numero character varying(250),
   localidade character varying(200),
+  datanascimento date,
   CONSTRAINT model_login_pkey PRIMARY KEY (id),
   CONSTRAINT usuario_fk FOREIGN KEY (usuario_id)
       REFERENCES public.model_login (id) MATCH SIMPLE
@@ -38,7 +39,7 @@ WITH (
 );
 ALTER TABLE public.model_login
   OWNER TO postgres;
-  
+
 CREATE TABLE public.telefone
 (
   id integer NOT NULL DEFAULT nextval('telefone_seq'::regclass),
