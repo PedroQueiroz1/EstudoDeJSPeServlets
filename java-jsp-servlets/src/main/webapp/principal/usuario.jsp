@@ -101,6 +101,14 @@
 															</div>
 
 															<div class="form-group form-default form-static-label">
+																<input type="text" name="rendaMensal" id="rendaMensal"
+																	class="form-control" required="required"
+																	value="${modelLogin.rendaMensal}"> <span
+																	class="form-bar"></span> <label class="float-label">Renda
+																	Mensal:</label>
+															</div>
+
+															<div class="form-group form-default form-static-label">
 																<input type="text" name="dataNascimento"
 																	id="dataNascimento" class="form-control"
 																	required="required"
@@ -360,6 +368,30 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 
 
 <script type="text/javascript">
+	$("#rendaMensal").maskMoney({
+		showSymbol : true,
+		symbol : "R$ ",
+		decimal : ",",
+		thousands : "."
+	});
+
+	const formatter = new Intl.NumberFormat('pt-BR',{
+		currency : 'BRL',
+		minimumFractionDigits : 2
+	});
+	
+	$("#rendamensal").val(formatter.format($('#rendamensal').val()));
+	
+	$("#rendamensal").focus();
+	
+	var dataNascimento = $("#dataNascimento").val();
+	
+	var dateFormat = new Date(dataNascimento);
+
+	$("#dataNascimento").val(dateFormat.toLocalDateString('pt-BR',{timeZone: 'UTC'}));
+	
+	$("#nome").focus();
+	
 	$(function() {
 
 		$("#dataNascimento").datepicker(

@@ -28,9 +28,9 @@ public class ModelLogin implements Serializable {
 	private String localidade;
 	private String uf;
 	private String numero;
-	
+	private Double rendaMensal;
+
 	private Date dataNascimento;
-	
 
 	public boolean isNovo() {
 
@@ -43,19 +43,21 @@ public class ModelLogin implements Serializable {
 		return id == null;
 	}
 
-	
-	
+	public Double getRendaMensal() {
+		return rendaMensal;
+	}
+
+	public void setRendaMensal(Double rendaMensal) {
+		this.rendaMensal = rendaMensal;
+	}
+
 	public Date getDataNascimento() {
 		return dataNascimento;
 	}
 
-
-
 	public void setDataNascimento(Date dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
-
-
 
 	public String getSexo() {
 		return sexo;
@@ -64,7 +66,7 @@ public class ModelLogin implements Serializable {
 	public void setSexo(String sexo) {
 		this.sexo = sexo;
 	}
-	
+
 	public String getFotosUsuario() {
 		return fotoUsuario;
 	}
@@ -192,7 +194,5 @@ public class ModelLogin implements Serializable {
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
-	
-	
 
 }
