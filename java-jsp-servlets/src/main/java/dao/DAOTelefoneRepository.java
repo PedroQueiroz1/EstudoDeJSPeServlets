@@ -75,4 +75,21 @@ public class DAOTelefoneRepository {
 		conn.commit();
 		
 	}
+	
+	public boolean existeTelefone(String fone, Long id) throws Exception {
+		
+		String sql = "SELECT COUNT(1) > 0 AS existe FROM telefone WHERE usuario_pai_id = ? AND numero = ?";
+		
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		
+		pstm.setLong(1, id);
+		pstm.setString(2, fone);
+		
+		ResultSet rs = pstm.executeQuery();
+		
+		rs.next();
+		
+		return rs.getBoolean("existe");
+		
+	}
 }
