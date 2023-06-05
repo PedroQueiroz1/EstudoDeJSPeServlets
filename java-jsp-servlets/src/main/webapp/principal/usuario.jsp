@@ -35,7 +35,7 @@
 									<div class="page-body">
 
 										<div class="row">
-											<div class="col-sm-11">
+											<div class="col-sm-12">
 												<!-- Basic Form Inputs card start -->
 												<div class="card">
 													<div class="card-block">
