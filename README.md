@@ -15,7 +15,7 @@
 ## Descrição do projeto 
 
 <p align="justify">
-   Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Javam. Também tem Ajax, Jquery, JSTL, EL e ViaCEP API e 'Jquery MaskMoney' no projeto.
+   Projeto criado como um pequeno estudo de JSP + Servlets + JDBC com SQL e Javam. Também tem Ajax, Jquery, JSTL, EL e ViaCEP API e 'Jquery MaskMoney' e criação de relatório com Jasper no projeto.
    Utiliza Tomcat V10.0
    É possível de realizar busca paginada...
  
