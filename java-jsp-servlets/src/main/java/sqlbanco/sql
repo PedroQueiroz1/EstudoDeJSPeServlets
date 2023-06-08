@@ -28,6 +28,7 @@ CREATE TABLE public.model_login
   numero character varying(250),
   localidade character varying(200),
   datanascimento date,
+  rendamensal double precision,
   CONSTRAINT model_login_pkey PRIMARY KEY (id),
   CONSTRAINT usuario_fk FOREIGN KEY (usuario_id)
       REFERENCES public.model_login (id) MATCH SIMPLE

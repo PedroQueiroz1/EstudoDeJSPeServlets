@@ -1,19 +1,22 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import connection.SingleConnectionBanco;
 import model.ModelLogin;
+import model.ModelTelefone;
 
 public class DAOUsuarioRepository {
 
 	private Connection conn;
-
+	
 	public DAOUsuarioRepository() {
 		conn = SingleConnectionBanco.getConnection();
 	}
@@ -97,6 +100,34 @@ public class DAOUsuarioRepository {
 
 		return this.consultarUsuario(mL.getLogin(), usuarioLogado);
 	}
+	
+	public List<ModelTelefone> listarTelefone (Long idUsuarioPai) throws Exception {
+		
+		List<ModelTelefone> listaTelefone = new ArrayList<>();
+		
+		String sql = "SELECT * FROM telefone WHERE usuario_pai_id = " + idUsuarioPai;
+		
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		ResultSet rs = pstm.executeQuery();
+
+		
+		while(rs.next()) {
+		ModelTelefone mT = new ModelTelefone();
+		
+		mT.setId(rs.getLong("id"));
+		mT.setNumero(rs.getString("numero"));
+		mT.setUsuario_cad_id(this.consultarUsuarioID(rs.getLong("usuario_cad_id")));
+		mT.setUsuario_pai_id(this.consultarUsuarioID(rs.getLong("usuario_pai_id")));
+		
+		listaTelefone.add(mT);
+	
+		}
+		
+		pstm.execute();
+		conn.commit();
+		
+		return listaTelefone;
+	}
 
 	/*
 	 * CONSULTAR LISTA PAGINADA DE USUÁRIO
@@ -130,9 +161,9 @@ public class DAOUsuarioRepository {
 	/*
 	 * Calcula a quantidade de páginas que devem ser mostradas na tela
 	 */
-	public int totalPagina(Long userLogado) throws Exception {
+	public int totalPagina(Long usuarioLogado) throws Exception {
 		
-		String sql = "SELECT COUNT(1) AS total FROM model_login WHERE usuario_id = " + userLogado;
+		String sql = "SELECT COUNT(1) AS total FROM model_login WHERE usuario_id = " + usuarioLogado;
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		
 		ResultSet rs = pstm.executeQuery();
@@ -154,7 +185,7 @@ public class DAOUsuarioRepository {
 	/*
 	 * CONSULTAR LISTA USUÁRIO
 	 */
-	public List<ModelLogin> consultarListaUsuario(Long usuarioLogado) throws SQLException {
+	public List<ModelLogin> consultarListaUsuario(Long usuarioLogado) throws Exception {
 
 		List<ModelLogin> mLs = new ArrayList<>();
 
@@ -177,6 +208,66 @@ public class DAOUsuarioRepository {
 			mLs.add(mL);
 		}
 
+		return mLs;
+	}
+	
+	public List<ModelLogin> consultarListaUsuarioRelatorio(Long usuarioLogado) throws Exception {
+		
+		List<ModelLogin> mLs = new ArrayList<>();
+		
+		String sql = "SELECT * FROM model_login WHERE useradmin IS FALSE AND usuario_id = " + usuarioLogado;
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		
+		ResultSet rs = pstm.executeQuery();
+		
+		while (rs.next()) {
+			ModelLogin mL = new ModelLogin();
+			
+			mL.setEmail(rs.getString("email"));
+			mL.setId(rs.getLong("id"));
+			mL.setLogin(rs.getString("login"));
+			mL.setNome(rs.getString("nome"));
+			mL.setPerfil(rs.getString("perfil"));
+			mL.setSexo(rs.getString("sexo"));
+			mL.setDataNascimento(rs.getDate("datanascimento"));
+			mL.setTelefones(this.listarTelefone(mL.getId()));
+			// mL.setLogin(rs.getString("senha"));
+			
+			mLs.add(mL);
+		}
+		
+		return mLs;
+	}
+	
+	public List<ModelLogin> consultarListaUsuarioRelatorio(Long usuarioLogado, String dataInicial, String dataFinal) throws Exception {
+		
+		List<ModelLogin> mLs = new ArrayList<>();
+		
+		String sql = "SELECT * FROM model_login WHERE useradmin IS FALSE AND usuario_id = " + usuarioLogado + " AND datanascimento >= ? AND datanascimento <= ? ";
+		PreparedStatement pstm = conn.prepareStatement(sql);
+		pstm.setDate(1, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd")
+				.format(new SimpleDateFormat("dd/mm/yyyy").parse(dataInicial))));
+		pstm.setDate(2, Date.valueOf(new SimpleDateFormat("yyyy-mm-dd")
+				.format(new SimpleDateFormat("dd/mm/yyyy").parse(dataFinal))));
+		
+		ResultSet rs = pstm.executeQuery();
+		
+		while (rs.next()) {
+			ModelLogin mL = new ModelLogin();
+			
+			mL.setEmail(rs.getString("email"));
+			mL.setId(rs.getLong("id"));
+			mL.setLogin(rs.getString("login"));
+			mL.setNome(rs.getString("nome"));
+			mL.setPerfil(rs.getString("perfil"));
+			mL.setSexo(rs.getString("sexo"));
+			mL.setDataNascimento(rs.getDate("datanascimento"));
+			mL.setTelefones(this.listarTelefone(mL.getId()));
+			// mL.setLogin(rs.getString("senha"));
+			
+			mLs.add(mL);
+		}
+		
 		return mLs;
 	}
 

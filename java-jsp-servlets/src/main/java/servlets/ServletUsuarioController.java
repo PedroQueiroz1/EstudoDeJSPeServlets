@@ -1,8 +1,10 @@
 package servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
@@ -13,12 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dao.DAOUsuarioRepository;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.ModelLogin;
+import util.ReportUtil;
 
 /*
  * mL = modelLogin
@@ -39,9 +43,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 			String acao = request.getParameter("acao");
 
-				/*
-				 * DELETAR
-				 */
+			/*
+			 * DELETAR
+			 */
 			if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletar")) {
 
 				String idUser = request.getParameter("id");
@@ -64,7 +68,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				daoUsuarioRep.deletarUsuario(idUser);
 
 				response.getWriter().write("Excluído com sucesso!");
-				
+
 				/*
 				 * BUSCAR USUARIO AJAX
 				 */
@@ -76,12 +80,13 @@ public class ServletUsuarioController extends ServletGenericUtil {
 						super.usuarioLogado(request));
 
 				ObjectMapper mapper = new ObjectMapper();
-				
+
 				String json = mapper.writeValueAsString(dadosJsonUsuario);
 
-				response.addHeader("totalPagina", ""+ daoUsuarioRep.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
+				response.addHeader("totalPagina", "" + daoUsuarioRep
+						.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
-				
+
 				/*
 				 * BUSCAR USUARIO AJAX PÁGINA
 				 */
@@ -89,16 +94,18 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				String nomeBusca = request.getParameter("nomeBusca");
 				String pagina = request.getParameter("pagina");
-				
-				List<ModelLogin> dadosJsonUsuario = daoUsuarioRep.consultarUsuarioListOffSet(nomeBusca, super.usuarioLogado(request), Integer.parseInt(pagina));
+
+				List<ModelLogin> dadosJsonUsuario = daoUsuarioRep.consultarUsuarioListOffSet(nomeBusca,
+						super.usuarioLogado(request), Integer.parseInt(pagina));
 
 				ObjectMapper mapper = new ObjectMapper();
-				
+
 				String json = mapper.writeValueAsString(dadosJsonUsuario);
 
-				response.addHeader("totalPagina", ""+ daoUsuarioRep.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
+				response.addHeader("totalPagina", "" + daoUsuarioRep
+						.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
-				 
+
 				/*
 				 * BUSCAR EDITAR
 				 */
@@ -115,7 +122,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("modelLogin", mL);
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-				
+
 				/*
 				 * LISTAR USUARIO
 				 */
@@ -127,36 +134,88 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("modelLogins", mLs);
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-				
+
 				/*
-				 * DOWNLOAD FOTO 
+				 * DOWNLOAD FOTO
 				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("downloadFoto")) {
-				
+
 				String idUser = request.getParameter("id");
-				
+
 				ModelLogin mL = daoUsuarioRep.consultarUsuarioID(idUser, super.usuarioLogado(request));
-				
-				if(mL.getFotosUsuario() != null && !mL.getFotosUsuario().isEmpty()) {
-					
-					response.setHeader("Content-Disposition", "attachment;filename=arquivo." + mL.getExtensaoFotoUsuario());
+
+				if (mL.getFotosUsuario() != null && !mL.getFotosUsuario().isEmpty()) {
+
+					response.setHeader("Content-Disposition",
+							"attachment;filename=arquivo." + mL.getExtensaoFotoUsuario());
 					response.getOutputStream().write(new Base64().decodeBase64(mL.getFotosUsuario().split("\\,")[1]));
 				}
-				
+
 				/*
 				 * PAGINAR
 				 */
-			}  else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
-				
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
+
 				Integer offset = Integer.parseInt(request.getParameter("pagina"));
+
+				List<ModelLogin> modelLogins = daoUsuarioRep.consultarListaUsuarioPaginada(this.usuarioLogado(request),
+						offset);
+
+				request.setAttribute("modelLogins", modelLogins);
+				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
+				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
+
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioUsuario")) {
+
+				// O parâmetro é buscado no "name="dataInicial" no arquivo .jsp
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+
+				if (dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+
+					request.setAttribute("listarUsuario",
+							daoUsuarioRep.consultarListaUsuarioRelatorio(super.usuarioLogado(request)));
+
+				} else {
+
+					request.setAttribute("listarUsuario", daoUsuarioRep
+							.consultarListaUsuarioRelatorio(super.usuarioLogado(request), dataInicial, dataFinal));
+
+				}
+
+				request.setAttribute("dataInicial", dataInicial);
+				request.setAttribute("dataFinal", dataFinal);
+				request.getRequestDispatcher("principal/reluser.jsp").forward(request, response);
+
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPdf")) {
+
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+
+				List<ModelLogin> mLs = null;
+
+				if (dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+
+					mLs = daoUsuarioRep.consultarListaUsuarioRelatorio(super.usuarioLogado(request));
+
+				} else {
+
+					mLs = daoUsuarioRep.consultarListaUsuarioRelatorio(super.usuarioLogado(request), dataInicial,
+							dataFinal);
+
+				}
+
+				HashMap<String, Object> params = new HashMap<>();
+				params.put("PARAM_SUB_REPORT", request.getServletContext().getRealPath("relatorio") + File.separator);
 				
-				List<ModelLogin> modelLogins = daoUsuarioRep.consultarListaUsuarioPaginada(this.usuarioLogado(request), offset);
-				
-				 request.setAttribute("modelLogins", modelLogins);
-			     request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
-				 request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-				
+				// "rel-user-jsp" = nome do relatorio gerado do Jasper
+				byte[] relatorio = new ReportUtil().gerarRelatorioPDF(mLs, "rel-user-jsp", params, request.getServletContext());
+
+				response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf");
+				response.getOutputStream().write(relatorio);
+
 			} else {
+
 				List<ModelLogin> mLs = daoUsuarioRep.consultarListaUsuario(super.usuarioLogado(request));
 				request.setAttribute("modelLogins", mLs);
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
@@ -193,10 +252,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			String numero = request.getParameter("numero");
 			String dataNascimento = request.getParameter("dataNascimento");
 			String rendaMensal = request.getParameter("rendaMensal");
-			
+
 			rendaMensal = rendaMensal.split("\\ ")[1].replaceAll("\\.", "").replaceAll("\\,", "");
 			ModelLogin modelLogin = new ModelLogin();
-			
+
 			modelLogin.setId(id != null && !id.isEmpty() ? Long.parseLong(id) : null);
 			modelLogin.setNome(nome);
 			modelLogin.setEmail(email);
@@ -210,9 +269,9 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			modelLogin.setLocalidade(localidade);
 			modelLogin.setUf(uf);
 			modelLogin.setNumero(numero);
-			modelLogin.setDataNascimento(Date.valueOf(new SimpleDateFormat("yyyy-mm-dd").format(new SimpleDateFormat("dd/mm/yyyy").parse(dataNascimento))));
+			modelLogin.setDataNascimento(Date.valueOf(new SimpleDateFormat("yyyy-mm-dd")
+					.format(new SimpleDateFormat("dd/mm/yyyy").parse(dataNascimento))));
 			modelLogin.setRendaMensal(Double.parseDouble(rendaMensal));
-			
 
 			if (ServletFileUpload.isMultipartContent(request)) {
 				Part part = request.getPart("fileFoto"); /* Pega foto da tela */
@@ -227,7 +286,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				}
 			}
 
-			
 			if (daoUsuarioRep.validarLogin(modelLogin.getLogin()) && modelLogin.getId() == null) {
 				msg = "Já existe usuário com o mesmo login, informe outro login";
 			} else {
@@ -236,7 +294,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				}
 				msg = "Atualizado com sucesso!";
 			}
-			
+
 			modelLogin = daoUsuarioRep.gravarUsuario(modelLogin, super.usuarioLogado(request));
 
 			List<ModelLogin> mLs = daoUsuarioRep.consultarListaUsuario(super.usuarioLogado(request));
@@ -255,4 +313,3 @@ public class ServletUsuarioController extends ServletGenericUtil {
 	}
 
 }
-

@@ -31,8 +31,8 @@ public class DAOTelefoneRepository {
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		ResultSet rs = pstm.executeQuery();
 
-		
 		while(rs.next()) {
+			
 		ModelTelefone mT = new ModelTelefone();
 		
 		mT.setId(rs.getLong("id"));
@@ -43,9 +43,6 @@ public class DAOTelefoneRepository {
 		listaTelefone.add(mT);
 	
 		}
-		
-		pstm.execute();
-		conn.commit();
 		
 		return listaTelefone;
 	}
