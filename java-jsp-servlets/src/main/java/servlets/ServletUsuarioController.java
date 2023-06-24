@@ -13,9 +13,9 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import beandto.BeanDtoGraficoSalarioUsuario;
 import dao.DAOUsuarioRepository;
 import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,9 +59,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 
-				/*
-				 * DELETAR AJAX
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletarAjax")) {
 				String idUser = request.getParameter("id");
 
@@ -69,9 +66,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				response.getWriter().write("Excluído com sucesso!");
 
-				/*
-				 * BUSCAR USUARIO AJAX
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUsuarioAjax")) {
 
 				String nomeBusca = request.getParameter("nomeBusca");
@@ -87,9 +81,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 						.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
 
-				/*
-				 * BUSCAR USUARIO AJAX PÁGINA
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUsuarioAjaxPagina")) {
 
 				String nomeBusca = request.getParameter("nomeBusca");
@@ -106,9 +97,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 						.consultarListaUsuarioTotalPaginaPaginacao(nomeBusca, super.usuarioLogado(request)));
 				response.getWriter().write(json);
 
-				/*
-				 * BUSCAR EDITAR
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarEditar")) {
 
 				String id = request.getParameter("id");
@@ -123,9 +111,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 
-				/*
-				 * LISTAR USUARIO
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("listarUsuario")) {
 
 				List<ModelLogin> mLs = daoUsuarioRep.consultarListaUsuario(super.usuarioLogado(request));
@@ -135,9 +120,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("totalPagina", daoUsuarioRep.totalPagina(this.usuarioLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 
-				/*
-				 * DOWNLOAD FOTO
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("downloadFoto")) {
 
 				String idUser = request.getParameter("id");
@@ -151,9 +133,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					response.getOutputStream().write(new Base64().decodeBase64(mL.getFotosUsuario().split("\\,")[1]));
 				}
 
-				/*
-				 * PAGINAR
-				 */
 			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("paginar")) {
 
 				Integer offset = Integer.parseInt(request.getParameter("pagina"));
@@ -187,7 +166,8 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.setAttribute("dataFinal", dataFinal);
 				request.getRequestDispatcher("principal/reluser.jsp").forward(request, response);
 
-			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPdf")) {
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPdf")
+					|| acao.equalsIgnoreCase("imprimirRelatorioExcel")) {
 
 				String dataInicial = request.getParameter("dataInicial");
 				String dataFinal = request.getParameter("dataFinal");
@@ -207,12 +187,46 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 				HashMap<String, Object> params = new HashMap<>();
 				params.put("PARAM_SUB_REPORT", request.getServletContext().getRealPath("relatorio") + File.separator);
-				
-				// "rel-user-jsp" = nome do relatorio gerado do Jasper
-				byte[] relatorio = new ReportUtil().gerarRelatorioPDF(mLs, "rel-user-jsp", params, request.getServletContext());
 
-				response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf");
+				byte[] relatorio = null;
+				String extensao = "";
+
+				// "rel-user-jsp" = nome do relatorio gerado do Jasper
+				if (acao.equalsIgnoreCase("imprimirRelatorioPdf")) {
+					relatorio = new ReportUtil().gerarRelatorioPDF(mLs, "rel-user-jsp", params,
+							request.getServletContext());
+					extensao = "pdf";
+
+				} else if (acao.equalsIgnoreCase("imprimirRelatorioExcel")) {
+					relatorio = new ReportUtil().gerarRelatorioExcel(mLs, "rel-user-jsp", params,
+							request.getServletContext());
+					extensao = "xls";
+				}
+
+				response.setHeader("Content-Disposition", "attachment;filename=arquivo." + extensao);
 				response.getOutputStream().write(relatorio);
+
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("graficoSalario")) {
+
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+
+				if (dataInicial == null || dataInicial.isEmpty() && dataFinal == null || dataFinal.isEmpty()) {
+
+					BeanDtoGraficoSalarioUsuario beanDtoGraficoSalarioUsuario = daoUsuarioRep
+							.montarGraficoMediaSalario(super.usuarioLogado(request));
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					String json = mapper.writeValueAsString(beanDtoGraficoSalarioUsuario);
+					
+					response.getWriter().write(json);
+					
+				} else {
+
+				}
+
+
 
 			} else {
 
