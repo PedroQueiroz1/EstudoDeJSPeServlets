@@ -1,10 +1,14 @@
 package filter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import connection.SingleConnectionBanco;
+import dao.DAOVersionadorBanco;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -63,20 +67,20 @@ public class FilterAutenticacao implements Filter {
 				request.setAttribute("msg", "Por favor, realize o login!");
 				redireciona.forward(request, response);
 				return; // Para a execução e redireciona para o login
-				
+
 			} else {
 				chain.doFilter(request, response);
-				
+
 			}
-			
+
 			conn.commit(); // Deu tudo certo, então commita as alterações no banco de dados
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 			RequestDispatcher redirecionar = request.getRequestDispatcher("erro.jsp");
 			request.setAttribute("msg", e.getMessage());
 			redirecionar.forward(request, response);
-			
+
 			try {
 				conn.rollback();
 			} catch (SQLException e1) {
@@ -91,6 +95,49 @@ public class FilterAutenticacao implements Filter {
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 		conn = SingleConnectionBanco.getConnection();
+
+		DAOVersionadorBanco daoVersBanco = new DAOVersionadorBanco();
+
+		String caminhoPastaSql = fConfig.getServletContext().getRealPath("versionadorbancosql") + File.separator;
+
+		File[] filesSql = new File(caminhoPastaSql).listFiles();
+
+		try {
+
+			for (File file : filesSql) {
+
+				boolean arquivoJaRodado = daoVersBanco.arquivoSqlRodado(file.getName());
+
+				if (!arquivoJaRodado) {
+					
+					FileInputStream entradaArquivo = new FileInputStream(file);
+					
+					Scanner lerArquivo = new Scanner(entradaArquivo, "UTF-8");
+					
+					StringBuilder sql = new StringBuilder();
+					
+					while(lerArquivo.hasNext()) {
+						
+						sql.append(lerArquivo.nextLine());
+						sql.append("\n");
+					}
+					
+					conn.prepareStatement(sql.toString()).execute();
+					daoVersBanco.gravaArquivoSqlRodado(file.getName());
+					
+					conn.commit();
+					lerArquivo.close();
+				}
+			}
+
+		} catch (Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
 	}
 
 }
