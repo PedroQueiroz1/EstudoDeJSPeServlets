@@ -22,7 +22,6 @@ public class DAOUsuarioRepository {
 		conn = SingleConnectionBanco.getConnection();
 	}
 	
-
 	public BeanDtoGraficoSalarioUsuario montarGraficoMediaSalario(Long usuarioLogado, String dataInicial,
 			String dataFinal) throws Exception {
 		
@@ -57,7 +56,7 @@ public class DAOUsuarioRepository {
 		
 		return beanDtoGSU;
 	}
-	
+
 	public BeanDtoGraficoSalarioUsuario montarGraficoMediaSalario(Long usuarioLogado) throws Exception {
 		
 		String sql = "SELECT AVG(rendamensal) AS media_salarial, perfil FROM model_login WHERE usuario_id = ? GROUP BY perfil";
