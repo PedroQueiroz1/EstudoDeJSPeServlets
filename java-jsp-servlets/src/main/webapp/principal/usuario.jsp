@@ -386,10 +386,13 @@ if (mL != null && mL.getSexo().equals("FEMININO")) {
 	
 	var dataNascimento = $("#dataNascimento").val();
 	
-	var dateFormat = new Date(dataNascimento);
-
-	$("#dataNascimento").val(dateFormat.toLocalDateString('pt-BR',{timeZone: 'UTC'}));
+	if (dataNascimento != null && dataNascimento != '') {
 	
+		var dateFormat = new Date(dataNascimento);
+
+		$("#dataNascimento").val(dateFormat.toLocalDateString('pt-BR',{timeZone: 'UTC'}));
+		
+	}
 	$("#nome").focus();
 	
 	$(function() {
