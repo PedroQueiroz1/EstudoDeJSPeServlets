@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/PedroQueiroz1/EstudoDeJSPeServlets?style=plastic)
 
 <p align="center">
-   <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=RED&style=for-the-badge" #vitrinedev/>
+   <img src="http://img.shields.io/static/v1?label=STATUS&message=FINALIZADO&color=RED&style=for-the-badge" #vitrinedev/>
 </p>
 
 ### Tópicos 
@@ -20,7 +20,7 @@
    É possível de realizar busca paginada...
  
 ## Ferramentas utilizadas
-[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js,heroku)](https://skillicons.dev)
 
 ## Acesso ao projeto
 
