@@ -49,6 +49,7 @@ public class DAOUsuarioRepository {
 			
 			perfis.add(perfil);
 			salarios.add(mediaSalarial);
+			
 		}
 		
 		beanDtoGSU.setPerfis(perfis);
@@ -87,7 +88,6 @@ public class DAOUsuarioRepository {
 		return beanDtoGSU;
 	}
 
-	// GRAVA USUÁRIO
 	public ModelLogin gravarUsuario(ModelLogin mL, Long usuarioLogado) throws Exception {
 
 		PreparedStatement pstm;
@@ -195,9 +195,6 @@ public class DAOUsuarioRepository {
 		return listaTelefone;
 	}
 
-	/*
-	 * CONSULTAR LISTA PAGINADA DE USUÁRIO
-	 */
 	public List<ModelLogin> consultarListaUsuarioPaginada(Long usuarioLogado, Integer offset) throws SQLException {
 		
 		List<ModelLogin> mLs = new ArrayList<>();
@@ -224,9 +221,6 @@ public class DAOUsuarioRepository {
 		return mLs;
 	}
 	
-	/*
-	 * Calcula a quantidade de páginas que devem ser mostradas na tela
-	 */
 	public int totalPagina(Long usuarioLogado) throws Exception {
 		
 		String sql = "SELECT COUNT(1) AS total FROM model_login WHERE usuario_id = " + usuarioLogado;
@@ -248,9 +242,6 @@ public class DAOUsuarioRepository {
 		return pagina.intValue();
 	}
 
-	/*
-	 * CONSULTAR LISTA USUÁRIO
-	 */
 	public List<ModelLogin> consultarListaUsuario(Long usuarioLogado) throws Exception {
 
 		List<ModelLogin> mLs = new ArrayList<>();

@@ -7,7 +7,9 @@ public class SingleConnectionBanco {
 
 	private static String url = "jdbc:postgresql://localhost:5433/jsp-servlets?autoReconnect=true"; 
 	private static String usuario = "postgres";
-	private static String senha = "admin";
+	// Deixar visível a senha mesmo, poderia criar uma classe com uma constante para adicionar no .gitignore e deixar com maior segurança a aplicação
+	// Mas como o objetivo desse projeto é só acadêmico, de estudos mesmo, prefiro deixar assim para futuras modificações.
+	private static String senha = "admin";  
 	private static Connection connection = null;
 	
 	public static Connection getConnection() {

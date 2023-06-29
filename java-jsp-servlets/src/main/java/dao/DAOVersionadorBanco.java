@@ -19,7 +19,7 @@ public class DAOVersionadorBanco implements Serializable {
 
 	public void gravaArquivoSqlRodado(String nome_file) throws Exception {
 
-		String sql = "INSERT INTO versionadorbanco(arquivo_sql) VALUES ?";
+		String sql = "INSERT INTO versionadorbanco(arquivo_sql) VALUES (?);";
 
 		PreparedStatement pstm = conn.prepareStatement(sql);
 		pstm.setString(1, nome_file);
