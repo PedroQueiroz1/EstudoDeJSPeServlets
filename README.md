@@ -20,7 +20,7 @@
    É possível de realizar busca paginada...
  
 ## Ferramentas utilizadas
-[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=java,postgres,bootstrap,html,css,js,heroku)](https://skillicons.dev)
 
 ## Acesso ao projeto
 
