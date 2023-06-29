@@ -29,6 +29,7 @@ CREATE TABLE public.model_login
   localidade character varying(200),
   datanascimento date,
   rendamensal double precision,
+  cpf character varying(200),
   CONSTRAINT model_login_pkey PRIMARY KEY (id),
   CONSTRAINT usuario_fk FOREIGN KEY (usuario_id)
       REFERENCES public.model_login (id) MATCH SIMPLE
@@ -58,5 +59,18 @@ CREATE TABLE public.telefone
 WITH (
   OIDS=FALSE
 );
+
 ALTER TABLE public.telefone
+  OWNER TO postgres;
+
+CREATE TABLE public.versionadorbanco
+(
+  id integer NOT NULL DEFAULT nextval('versionadorbanco_seq'::regclass),
+  arquivo_sql character varying(50) NOT NULL,
+  CONSTRAINT id_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.versionadorbanco
   OWNER TO postgres;
